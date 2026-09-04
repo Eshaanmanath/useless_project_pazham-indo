@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puttu-Pazham Analyzer</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; padding: 20px; text-align: center; background: #f4f4f9; }
+    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    input[type="file"] { margin: 15px 0; }
+    button { background: #28a745; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #218838; }
+    #resultImg { max-width: 100%; border-radius: 8px; margin-top: 20px; display: none; }
+    .badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; margin-top: 15px; font-size: 18px; }
+    .enough { background: #d4edda; color: #155724; }
+    .not-enough { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🍌 Puttu vs Pazham Ratio Analyzer 🥥</h2>
+  <p>Upload a photo of your Puttu cylinder and Banana on a plate.</p>
+  
+  <input type="file" id="photoInput" accept="image/*"><br>
+  <button onclick="uploadImage()">Analyze Plate</button>
+
+  <div id="statusOutput"></div>
+  <img id="resultImg" alt="Analysis Visualization">
+</div>
+
+<script>
+  async function uploadImage() {
+    const fileInput = document.getElementById('photoInput');
+    const statusDiv = document.getElementById('statusOutput');
+    const img = document.getElementById('resultImg');
+
+    if (!fileInput.files[0]) {
+      alert('Please select an image first!');
+      return;
+    }
+
+    statusDiv.innerHTML = "<p>Processing image with YOLO + OpenCV...</p>";
+    img.style.display = "none";
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    try {
+      const res = await fetch('/analyze', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (data.error) {
+        statusDiv.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+        return;
+      }
+
+      const badgeClass = data.is_enough ? "enough" : "not-enough";
+      statusDiv.innerHTML = `
+        <div class="badge ${badgeClass}">${data.status}</div>
+        <p>Target Volume Match: <strong>${data.sufficiency_percentage}%</strong></p>
+      `;
+
+      img.src = data.annotated_image;
+      img.style.display = "block";
+    } catch (err) {
+      statusDiv.innerHTML = `<p style="color:red;">Failed to process image.</p>`;
+    }
+  }
+</script>
+</body>
+</html>
