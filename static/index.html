@@ -46,26 +46,26 @@
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
 
-    try {
-      const res = await fetch('/analyze', { method: 'POST', body: formData });
-      const data = await res.json();
+  try {
+  const res = await fetch('/analyze', { method: 'POST', body: formData });
+  const data = await res.json();
 
-      if (data.error) {
-        statusDiv.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
-        return;
-      }
+  if (!res.ok || data.error) {
+    statusDiv.innerHTML = `<p style="color:red;">Error: ${data.error || 'Server HTTP ' + res.status}</p>`;
+    return;
+  }
 
-      const badgeClass = data.is_enough ? "enough" : "not-enough";
-      statusDiv.innerHTML = `
-        <div class="badge ${badgeClass}">${data.status}</div>
-        <p>Target Volume Match: <strong>${data.sufficiency_percentage}%</strong></p>
-      `;
+  const badgeClass = data.is_enough ? "enough" : "not-enough";
+  statusDiv.innerHTML = `
+    <div class="badge ${badgeClass}">${data.status}</div>
+    <p>Target Volume Match: <strong>${data.sufficiency_percentage}%</strong></p>
+  `;
 
-      img.src = data.annotated_image;
-      img.style.display = "block";
-    } catch (err) {
-      statusDiv.innerHTML = `<p style="color:red;">Failed to process image.</p>`;
-    }
+  img.src = data.annotated_image;
+  img.style.display = "block";
+} catch (err) {
+  statusDiv.innerHTML = `<p style="color:red;">Network or Server Error: ${err.message}</p>`;
+}
   }
 </script>
 </body>

@@ -12,7 +12,18 @@ def process_puttu_and_banana(image_bytes):
     if img is None:
         return {"error": "Invalid image format"}
 
+    # --- ADD THIS RESIZING BLOCK TO PREVENT RAM CRASHES ---
+    h_orig, w_orig = img.shape[:2]
+    max_dimension = 1024  # Cap maximum dimension to 1024px
+
+    if max(h_orig, w_orig) > max_dimension:
+        scale = max_dimension / float(max(h_orig, w_orig))
+        new_w = int(w_orig * scale)
+        new_h = int(h_orig * scale)
+        img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
     h_img, w_img, _ = img.shape
+    # -----------------------------------------------------
 
     # 1. Detect Banana with YOLO
     results = model(img, verbose=False)[0]
