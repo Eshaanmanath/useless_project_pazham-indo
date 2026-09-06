@@ -109,8 +109,7 @@ uvicorn app:app --reload
 *Video demonstrating real-time photo upload, server processing via YOLO + OpenCV, and dynamic UI feedback.*
 
 # Additional Demos
-- **Live Web App:** [https://useless-project-pazham-indo.onrender.com/](https://useless-project-pazham-indo.onrender.com/)
-
+- **Live Web App:** [https://pazham-indo.onrender.com/](https://pazham-indo.onrender.com/)
 ---
 
 
