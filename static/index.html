@@ -3,33 +3,429 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Puttu-Pazham Analyzer</title>
+  <title>pazham indo?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; padding: 20px; text-align: center; background: #f4f4f9; }
-    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    input[type="file"] { margin: 15px 0; }
-    button { background: #28a745; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #218838; }
-    #resultImg { max-width: 100%; border-radius: 8px; margin-top: 20px; display: none; }
-    .badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; margin-top: 15px; font-size: 18px; }
-    .enough { background: #d4edda; color: #155724; }
-    .not-enough { background: #f8d7da; color: #721c24; }
+    :root {
+      --yellow: #FFC70B;
+      --yellow-dim: #E6B300;
+      --black: #141210;
+      --near-black: #1F1B14;
+      --cream: #FFFBF0;
+      --ok-dot: #1F7A34;
+      --warn-dot: #C4341A;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: 'Work Sans', sans-serif;
+      color: var(--black);
+      background: var(--cream);
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      background: var(--yellow);
+      color: var(--black);
+      display: flex;
+      flex-direction: column;
+      padding: 56px 6vw 44px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      right: -15%;
+      width: 70vmin;
+      height: 70vmin;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, var(--black) 0%, transparent 70%);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 40px;
+      flex-wrap: wrap;
+      order: 2;
+    }
+
+    .hero-title {
+      font-family: 'Bungee', sans-serif;
+      font-weight: 400;
+      font-size: clamp(40px, 7.5vw, 88px);
+      line-height: 0.92;
+      margin: 0;
+      color: var(--black);
+      max-width: 10ch;
+    }
+
+    .hero-desc {
+      max-width: 34ch;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #4a4030;
+      padding-top: 10px;
+    }
+
+    .hero-desc strong {
+      color: var(--black);
+    }
+
+    .hero-banana {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 20px 0;
+      order: 1;
+    }
+
+    .banana-pixel-art {
+      width: min(56vw, 460px);
+      height: auto;
+      color: var(--black);
+      image-rendering: pixelated;
+    }
+
+    .analyze-cta {
+      position: relative;
+      align-self: center;
+      order: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--black);
+      font-family: 'Work Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .analyze-cta .ring {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 2px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.25s ease, transform 0.25s ease;
+    }
+
+    .analyze-cta:hover .ring {
+      background: var(--black);
+      transform: translateY(4px);
+    }
+
+    .analyze-cta:hover .ring svg path,
+    .analyze-cta:hover .ring svg line {
+      stroke: var(--yellow);
+    }
+
+    .analyze-cta svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* ---------- Upload section ---------- */
+    .workspace {
+      min-height: 100vh;
+      padding: 90px 6vw 100px;
+      display: flex;
+      justify-content: center;
+      background: var(--black);
+    }
+
+    .card {
+      background: var(--near-black);
+      border: 2px solid var(--yellow);
+      border-radius: 18px;
+      padding: 44px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 8px 8px 0 var(--yellow);
+    }
+
+    .card h2 {
+      font-family: 'Bungee', sans-serif;
+      font-weight: 400;
+      font-size: 26px;
+      margin: 0 0 8px;
+      color: var(--yellow);
+    }
+
+    .card p.lede {
+      margin: 0 0 28px;
+      color: #C9BFA6;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--yellow-dim);
+      border-radius: 14px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      background: #29241a;
+    }
+
+    .dropzone.dragover {
+      background: #3a3222;
+      border-color: var(--yellow);
+    }
+
+    .dropzone svg {
+      width: 34px;
+      height: 34px;
+      margin-bottom: 12px;
+      color: var(--yellow);
+    }
+
+    .dropzone .dz-main {
+      font-weight: 600;
+      font-size: 15px;
+      margin: 0 0 4px;
+      color: var(--cream);
+    }
+
+    .dropzone .dz-sub {
+      font-size: 13px;
+      color: #9a9075;
+      margin: 0;
+    }
+
+    .dropzone .dz-sub button {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--yellow);
+      text-decoration: underline;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    #photoInput {
+      display: none;
+    }
+
+    .filename {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--cream);
+      display: none;
+    }
+
+    .preview-thumb {
+      display: none;
+      max-width: 160px;
+      max-height: 160px;
+      border-radius: 10px;
+      margin-top: 16px;
+      border: 2px solid var(--yellow);
+    }
+
+    button.analyze-btn {
+      width: 100%;
+      margin-top: 24px;
+      background: var(--yellow);
+      color: var(--black);
+      border: 2px solid var(--yellow);
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Work Sans', sans-serif;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    button.analyze-btn:hover {
+      background: var(--yellow-dim);
+      transform: translateY(-2px);
+    }
+
+    button.analyze-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #statusOutput {
+      margin-top: 24px;
+    }
+
+    #statusOutput p {
+      font-size: 14px;
+      color: #C9BFA6;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 15px;
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    .badge .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .enough .dot { background: var(--ok-dot); }
+    .not-enough .dot { background: var(--warn-dot); }
+
+    #resultImg {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+      border: 2px solid var(--yellow);
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 28px 24px 32px; }
+      .hero-text { align-items: flex-start; flex-direction: column; }
+      .banana-pixel-art { width: 74vw; }
+      .card { padding: 28px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>🍌 Puttu vs Pazham Ratio Analyzer 🥥</h2>
-  <p>Upload a photo of your Puttu cylinder and Banana on a plate.</p>
-  
-  <input type="file" id="photoInput" accept="image/*"><br>
-  <button onclick="uploadImage()">Analyze Plate</button>
+<section class="hero">
+  <div class="hero-text">
+    <h1 class="hero-title">pazham<br>indo?</h1>
+    <p class="hero-desc">
+      Every plate of puttu needs its fair share of banana. Upload a photo of yours and we'll check the ratio &mdash; <strong>enough pazham, or not?</strong>
+    </p>
+  </div>
 
-  <div id="statusOutput"></div>
-  <img id="resultImg" alt="Analysis Visualization">
-</div>
+  <div class="hero-banana">
+    <svg viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg" class="banana-pixel-art" aria-hidden="true">
+  <rect x="50" y="20" width="10" height="10" fill="currentColor"/><rect x="60" y="20" width="10" height="10" fill="currentColor"/><rect x="140" y="20" width="10" height="10" fill="currentColor"/><rect x="150" y="20" width="10" height="10" fill="currentColor"/><rect x="160" y="20" width="10" height="10" fill="currentColor"/><rect x="170" y="20" width="10" height="10" fill="currentColor"/><rect x="180" y="20" width="10" height="10" fill="currentColor"/><rect x="190" y="20" width="10" height="10" fill="currentColor"/><rect x="200" y="20" width="10" height="10" fill="currentColor"/><rect x="210" y="20" width="10" height="10" fill="currentColor"/><rect x="50" y="30" width="10" height="10" fill="currentColor"/><rect x="60" y="30" width="10" height="10" fill="currentColor"/><rect x="120" y="30" width="10" height="10" fill="currentColor"/><rect x="130" y="30" width="10" height="10" fill="currentColor"/><rect x="140" y="30" width="10" height="10" fill="currentColor"/><rect x="150" y="30" width="10" height="10" fill="currentColor"/><rect x="160" y="30" width="10" height="10" fill="currentColor"/><rect x="170" y="30" width="10" height="10" fill="currentColor"/><rect x="180" y="30" width="10" height="10" fill="currentColor"/><rect x="190" y="30" width="10" height="10" fill="currentColor"/><rect x="200" y="30" width="10" height="10" fill="currentColor"/><rect x="210" y="30" width="10" height="10" fill="currentColor"/><rect x="220" y="30" width="10" height="10" fill="currentColor"/><rect x="230" y="30" width="10" height="10" fill="currentColor"/><rect x="100" y="40" width="10" height="10" fill="currentColor"/><rect x="110" y="40" width="10" height="10" fill="currentColor"/><rect x="120" y="40" width="10" height="10" fill="currentColor"/><rect x="130" y="40" width="10" height="10" fill="currentColor"/><rect x="140" y="40" width="10" height="10" fill="currentColor"/><rect x="150" y="40" width="10" height="10" fill="currentColor"/><rect x="160" y="40" width="10" height="10" fill="currentColor"/><rect x="170" y="40" width="10" height="10" fill="currentColor"/><rect x="180" y="40" width="10" height="10" fill="currentColor"/><rect x="200" y="40" width="10" height="10" fill="currentColor"/><rect x="210" y="40" width="10" height="10" fill="currentColor"/><rect x="220" y="40" width="10" height="10" fill="currentColor"/><rect x="230" y="40" width="10" height="10" fill="currentColor"/><rect x="240" y="40" width="10" height="10" fill="currentColor"/><rect x="90" y="50" width="10" height="10" fill="currentColor"/><rect x="100" y="50" width="10" height="10" fill="currentColor"/><rect x="110" y="50" width="10" height="10" fill="currentColor"/><rect x="120" y="50" width="10" height="10" fill="currentColor"/><rect x="130" y="50" width="10" height="10" fill="currentColor"/><rect x="140" y="50" width="10" height="10" fill="currentColor"/><rect x="150" y="50" width="10" height="10" fill="currentColor"/><rect x="160" y="50" width="10" height="10" fill="currentColor"/><rect x="170" y="50" width="10" height="10" fill="currentColor"/><rect x="180" y="50" width="10" height="10" fill="currentColor"/><rect x="190" y="50" width="10" height="10" fill="currentColor"/><rect x="200" y="50" width="10" height="10" fill="currentColor"/><rect x="210" y="50" width="10" height="10" fill="currentColor"/><rect x="220" y="50" width="10" height="10" fill="currentColor"/><rect x="230" y="50" width="10" height="10" fill="currentColor"/><rect x="240" y="50" width="10" height="10" fill="currentColor"/><rect x="250" y="50" width="10" height="10" fill="currentColor"/><rect x="260" y="50" width="10" height="10" fill="currentColor"/><rect x="80" y="60" width="10" height="10" fill="currentColor"/><rect x="90" y="60" width="10" height="10" fill="currentColor"/><rect x="100" y="60" width="10" height="10" fill="currentColor"/><rect x="110" y="60" width="10" height="10" fill="currentColor"/><rect x="120" y="60" width="10" height="10" fill="currentColor"/><rect x="130" y="60" width="10" height="10" fill="currentColor"/><rect x="140" y="60" width="10" height="10" fill="currentColor"/><rect x="150" y="60" width="10" height="10" fill="currentColor"/><rect x="160" y="60" width="10" height="10" fill="currentColor"/><rect x="170" y="60" width="10" height="10" fill="currentColor"/><rect x="180" y="60" width="10" height="10" fill="currentColor"/><rect x="190" y="60" width="10" height="10" fill="currentColor"/><rect x="200" y="60" width="10" height="10" fill="currentColor"/><rect x="210" y="60" width="10" height="10" fill="currentColor"/><rect x="220" y="60" width="10" height="10" fill="currentColor"/><rect x="230" y="60" width="10" height="10" fill="currentColor"/><rect x="240" y="60" width="10" height="10" fill="currentColor"/><rect x="250" y="60" width="10" height="10" fill="currentColor"/><rect x="260" y="60" width="10" height="10" fill="currentColor"/><rect x="270" y="60" width="10" height="10" fill="currentColor"/><rect x="70" y="70" width="10" height="10" fill="currentColor"/><rect x="80" y="70" width="10" height="10" fill="currentColor"/><rect x="90" y="70" width="10" height="10" fill="currentColor"/><rect x="100" y="70" width="10" height="10" fill="currentColor"/><rect x="110" y="70" width="10" height="10" fill="currentColor"/><rect x="130" y="70" width="10" height="10" fill="currentColor"/><rect x="140" y="70" width="10" height="10" fill="currentColor"/><rect x="150" y="70" width="10" height="10" fill="currentColor"/><rect x="210" y="70" width="10" height="10" fill="currentColor"/><rect x="220" y="70" width="10" height="10" fill="currentColor"/><rect x="230" y="70" width="10" height="10" fill="currentColor"/><rect x="240" y="70" width="10" height="10" fill="currentColor"/><rect x="250" y="70" width="10" height="10" fill="currentColor"/><rect x="260" y="70" width="10" height="10" fill="currentColor"/><rect x="270" y="70" width="10" height="10" fill="currentColor"/><rect x="280" y="70" width="10" height="10" fill="currentColor"/><rect x="60" y="80" width="10" height="10" fill="currentColor"/><rect x="70" y="80" width="10" height="10" fill="currentColor"/><rect x="80" y="80" width="10" height="10" fill="currentColor"/><rect x="90" y="80" width="10" height="10" fill="currentColor"/><rect x="100" y="80" width="10" height="10" fill="currentColor"/><rect x="110" y="80" width="10" height="10" fill="currentColor"/><rect x="250" y="80" width="10" height="10" fill="currentColor"/><rect x="260" y="80" width="10" height="10" fill="currentColor"/><rect x="270" y="80" width="10" height="10" fill="currentColor"/><rect x="280" y="80" width="10" height="10" fill="currentColor"/><rect x="290" y="80" width="10" height="10" fill="currentColor"/><rect x="50" y="90" width="10" height="10" fill="currentColor"/><rect x="60" y="90" width="10" height="10" fill="currentColor"/><rect x="70" y="90" width="10" height="10" fill="currentColor"/><rect x="80" y="90" width="10" height="10" fill="currentColor"/><rect x="280" y="90" width="10" height="10" fill="currentColor"/><rect x="290" y="90" width="10" height="10" fill="currentColor"/><rect x="300" y="90" width="10" height="10" fill="currentColor"/><rect x="40" y="100" width="10" height="10" fill="currentColor"/><rect x="50" y="100" width="10" height="10" fill="currentColor"/><rect x="300" y="100" width="10" height="10" fill="currentColor"/>
+</svg>
+  </div>
+
+  <button class="analyze-cta" onclick="document.getElementById('workspace').scrollIntoView({behavior:'smooth'})" aria-label="Scroll to analyze your plate">
+    <span class="ring">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="4" x2="12" y2="20"></line>
+        <path d="M6 14l6 6 6-6"></path>
+      </svg>
+    </span>
+    analyze
+  </button>
+</section>
+
+<section class="workspace" id="workspace">
+  <div class="card">
+    <h2>Analyze your plate</h2>
+    <p class="lede">Drop in a photo of your puttu and banana, and we'll measure up the ratio.</p>
+
+    <div class="dropzone" id="dropzone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#E6B300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
+      </svg>
+      <p class="dz-main">Drag and drop your photo here</p>
+      <p class="dz-sub">or <button type="button" onclick="document.getElementById('photoInput').click()">choose a file</button></p>
+      <p class="filename" id="filename"></p>
+      <img class="preview-thumb" id="previewThumb" alt="Selected preview">
+    </div>
+    <input type="file" id="photoInput" accept="image/*">
+
+    <button class="analyze-btn" id="analyzeBtn" onclick="uploadImage()">Analyze plate</button>
+
+    <div id="statusOutput"></div>
+    <img id="resultImg" alt="Analysis Visualization">
+  </div>
+</section>
 
 <script>
+  const dropzone = document.getElementById('dropzone');
+  const photoInput = document.getElementById('photoInput');
+  const filenameLabel = document.getElementById('filename');
+  const previewThumb = document.getElementById('previewThumb');
+
+  function setSelectedFile(file) {
+    if (!file) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    photoInput.files = dt.files;
+
+    filenameLabel.textContent = file.name;
+    filenameLabel.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewThumb.src = e.target.result;
+      previewThumb.style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  dropzone.addEventListener('click', () => photoInput.click());
+
+  photoInput.addEventListener('change', () => {
+    if (photoInput.files[0]) setSelectedFile(photoInput.files[0]);
+  });
+
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(evt => {
+    dropzone.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.remove('dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) setSelectedFile(file);
+  });
+
   async function uploadImage() {
     const fileInput = document.getElementById('photoInput');
     const statusDiv = document.getElementById('statusOutput');
@@ -51,20 +447,20 @@
   const data = await res.json();
 
   if (!res.ok || data.error) {
-    statusDiv.innerHTML = `<p style="color:red;">Error: ${data.error || 'Server HTTP ' + res.status}</p>`;
+    statusDiv.innerHTML = `<p style="color:#C4341A;">Error: ${data.error || 'Server HTTP ' + res.status}</p>`;
     return;
   }
 
   const badgeClass = data.is_enough ? "enough" : "not-enough";
   statusDiv.innerHTML = `
-    <div class="badge ${badgeClass}">${data.status}</div>
+    <div class="badge ${badgeClass}"><span class="dot"></span>${data.status}</div>
     <p>Target Volume Match: <strong>${data.sufficiency_percentage}%</strong></p>
   `;
 
   img.src = data.annotated_image;
   img.style.display = "block";
 } catch (err) {
-  statusDiv.innerHTML = `<p style="color:red;">Network or Server Error: ${err.message}</p>`;
+  statusDiv.innerHTML = `<p style="color:#C4341A;">Network or Server Error: ${err.message}</p>`;
 }
   }
 </script>
