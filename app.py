@@ -17,3 +17,7 @@ async def analyze_plate(file: UploadFile = File(...)):
     image_bytes = await file.read()
     result = process_puttu_and_banana(image_bytes)
     return result
+    
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
