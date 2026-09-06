@@ -378,60 +378,6 @@
 </section>
 
 <script>
-  // Eased smooth scrolling for regular mouse-wheel input.
-  // Trackpad/touch scrolling already has native momentum, and this bows
-  // out entirely for people who've asked for reduced motion.
-  (function () {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
-    let targetY = window.scrollY;
-    let currentY = window.scrollY;
-    let ticking = false;
-    const ease = 0.12;
-
-    function clampTarget() {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      targetY = Math.max(0, Math.min(targetY, max));
-    }
-
-    function animate() {
-      currentY += (targetY - currentY) * ease;
-      if (Math.abs(targetY - currentY) < 0.5) {
-        currentY = targetY;
-        window.scrollTo(0, currentY);
-        ticking = false;
-        return;
-      }
-      window.scrollTo(0, currentY);
-      requestAnimationFrame(animate);
-    }
-
-    window.addEventListener('wheel', (e) => {
-      // Only take over plain vertical mouse-wheel scrolling; let the
-      // browser handle pinch-zoom, horizontal scroll, etc. natively.
-      if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      targetY += e.deltaY;
-      clampTarget();
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(animate);
-      }
-    }, { passive: false });
-
-    // Keep the animated target in sync if the user scrolls some other
-    // way (keyboard, scrollbar drag, anchor jump, resize).
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        targetY = window.scrollY;
-        currentY = window.scrollY;
-      }
-    });
-
-    window.addEventListener('resize', clampTarget);
-  })();
-
   const dropzone = document.getElementById('dropzone');
   const photoInput = document.getElementById('photoInput');
   const filenameLabel = document.getElementById('filename');
